@@ -1,0 +1,354 @@
+{
+  "info": {
+    "_postman_id": "imovies-api-collection-2026",
+    "name": "iMovies MERN Cinema Booking API",
+    "description": "Comprehensive Postman collection for iMovies cinema ticket booking platform covering Auth, Movies, Theatres, Shows, Real-time Seats, Bookings, Payments, Reviews, Notifications, and Admin Analytics.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "movieId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "theatreId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "showId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"User@123\",\n  \"phone\": \"9876543219\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  pm.collectionVariables.set('authToken', json.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"User@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.token) {",
+                  "  pm.collectionVariables.set('adminToken', json.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@imovies.com\",\n  \"password\": \"Admin@123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Movies",
+      "item": [
+        {
+          "name": "Get All Movies (Filtered & Paginated)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/movies?genre=Sci-Fi&language=English&status=now_showing&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["movies"],
+              "query": [
+                { "key": "genre", "value": "Sci-Fi" },
+                { "key": "language", "value": "English" },
+                { "key": "status", "value": "now_showing" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Movie by ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/movies/{{movieId}}", "host": ["{{baseUrl}}"], "path": ["movies", "{{movieId}}"] }
+          }
+        },
+        {
+          "name": "Create Movie (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Quantum Paradox\",\n  \"description\": \"An epic thriller across multiverses.\",\n  \"genre\": [\"Sci-Fi\", \"Thriller\"],\n  \"language\": \"English\",\n  \"duration\": 135,\n  \"releaseDate\": \"2026-08-15\",\n  \"status\": \"now_showing\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/movies", "host": ["{{baseUrl}}"], "path": ["movies"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Theatres & Shows",
+      "item": [
+        {
+          "name": "Get Theatres (City Filter)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/theatres?city=Mumbai", "host": ["{{baseUrl}}"], "path": ["theatres"], "query": [{ "key": "city", "value": "Mumbai" }] }
+          }
+        },
+        {
+          "name": "Get Shows (By Movie, Theatre, Date)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/shows?movie={{movieId}}&city=Mumbai", "host": ["{{baseUrl}}"], "path": ["shows"], "query": [{ "key": "movie", "value": "{{movieId}}" }, { "key": "city", "value": "Mumbai" }] }
+          }
+        },
+        {
+          "name": "Get Show Details with Seat Map",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/shows/{{showId}}", "host": ["{{baseUrl}}"], "path": ["shows", "{{showId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Real-Time Seats",
+      "item": [
+        {
+          "name": "Get Seats for Show",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/shows/{{showId}}/seats", "host": ["{{baseUrl}}"], "path": ["shows", "{{showId}}", "seats"] }
+          }
+        },
+        {
+          "name": "Lock Seats (5-Min TTL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seats\": [\"A1\", \"A2\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/shows/{{showId}}/seats/lock", "host": ["{{baseUrl}}"], "path": ["shows", "{{showId}}", "seats", "lock"] }
+          }
+        },
+        {
+          "name": "Unlock Seats",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"seats\": [\"A1\", \"A2\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/shows/{{showId}}/seats/unlock", "host": ["{{baseUrl}}"], "path": ["shows", "{{showId}}", "seats", "unlock"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Bookings & Payments",
+      "item": [
+        {
+          "name": "Create Pending Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"showId\": \"{{showId}}\",\n  \"seats\": [\"A1\", \"A2\"]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/bookings", "host": ["{{baseUrl}}"], "path": ["bookings"] }
+          }
+        },
+        {
+          "name": "Create Payment Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bookingId\": \"{{bookingId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/payments/create-order", "host": ["{{baseUrl}}"], "path": ["payments", "create-order"] }
+          }
+        },
+        {
+          "name": "Verify Payment & Confirm Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"order_mock_12345\",\n  \"paymentId\": \"pay_mock_12345\",\n  \"signature\": \"mock_sig\",\n  \"bookingId\": \"{{bookingId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/payments/verify", "host": ["{{baseUrl}}"], "path": ["payments", "verify"] }
+          }
+        },
+        {
+          "name": "Get My Bookings",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+            "url": { "raw": "{{baseUrl}}/bookings/my?type=upcoming", "host": ["{{baseUrl}}"], "path": ["bookings", "my"], "query": [{ "key": "type", "value": "upcoming" }] }
+          }
+        },
+        {
+          "name": "Cancel Booking (With Refund)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Schedule conflict\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/bookings/{{bookingId}}/cancel", "host": ["{{baseUrl}}"], "path": ["bookings", "{{bookingId}}", "cancel"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Admin Analytics & Management",
+      "item": [
+        {
+          "name": "Get Dashboard KPI Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/stats", "host": ["{{baseUrl}}"], "path": ["admin", "stats"] }
+          }
+        },
+        {
+          "name": "Get Revenue Report",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/reports/revenue", "host": ["{{baseUrl}}"], "path": ["admin", "reports", "revenue"] }
+          }
+        },
+        {
+          "name": "List All Platform Users (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] }
+          }
+        },
+        {
+          "name": "Toggle Block User (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/:id/block", "host": ["{{baseUrl}}"], "path": ["users", ":id", "block"] }
+          }
+        }
+      ]
+    }
+  ]
+}

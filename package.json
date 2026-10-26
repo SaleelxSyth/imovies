@@ -1,0 +1,16 @@
+{
+  "name": "imovies-cinema-platform",
+  "version": "1.0.0",
+  "description": "Production-grade MERN cinema booking system with real-time seat synchronization",
+  "scripts": {
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "seed": "npm run seed --prefix server",
+    "test": "npm test --prefix server",
+    "build": "npm run build --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
