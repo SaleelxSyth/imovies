@@ -35,6 +35,7 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 const server = http.createServer(app);
+app.set('trust proxy', 1);
 
 // Initialize Socket.io with CORS configuration
 const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
