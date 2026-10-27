@@ -61,12 +61,14 @@ app.use(
       if (!origin) return callback(null, true);
 
       const allowedOrigins = [
-        process.env.CLIENT_URL?.replace(/\/$/, ''),
-        'https://imovies-lemon.vercel.app',
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-        'http://localhost:3000'
-      ].filter(Boolean);
+  process.env.CLIENT_URL?.replace(/\/$/, ''),
+  'https://imovies-lemon.vercel.app',
+  'https://imovies-oql331l18-syth2.vercel.app',
+  'https://imovies-3xfwkc7z7-syth2.vercel.app',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000'
+].filter(Boolean);
 
       if (
         allowedOrigins.includes(origin) ||
