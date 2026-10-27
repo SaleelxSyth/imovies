@@ -54,25 +54,34 @@ app.use(
   })
 );
 
+
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
+
       const allowedOrigins = [
-        clientUrl,
+        process.env.CLIENT_URL?.replace(/\/$/, ''),
+        'https://imovies-lemon.vercel.app',
         'http://localhost:5173',
         'http://127.0.0.1:5173',
         'http://localhost:3000'
-      ];
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-        callback(null, true);
-      } else {
-        callback(new Error('Blocked by CORS policy'));
+      ].filter(Boolean);
+
+      if (
+        allowedOrigins.includes(origin) ||
+        process.env.NODE_ENV !== 'production'
+      ) {
+        return callback(null, true);
       }
+
+      logger.error(`CORS rejected origin: ${origin}`);
+      return callback(new Error('Blocked by CORS policy'));
     },
     credentials: true
   })
 );
+
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
